@@ -856,10 +856,13 @@ else {
      'monitoring_a' => 15,
      'activity_summary' => 20,
      'monitoring_daily' => 28,
+     'records' => 29,
      'monitoring_b' => 32,
      'segment' => 34,
      'segment_list' => 35,
      'exd_configuration' => 40,
+     'metrics' => 44,
+     'sleep' => 49,
      'mfg_range_min' => 0xF7,
      'mfg_range_max' => 0xFE,
    },
@@ -886,6 +889,7 @@ else {
      'event' => 21,
      'source' => 22, # undocumented
      'device_info' => 23,
+     'unknown_summary' => 24,
      'workout' => 26,
      'workout_step' => 27,
      'schedule' => 28,
@@ -953,14 +957,21 @@ else {
      'magnetometer_data' => 208,
      'barometer_data' => 209,
      'one_d_sensor_calibration' => 210,
+     'monitoring_hr_data' => 211,
      'set' => 225,
      'stress_level' => 227,
+     'max_met_data' => 229,
      'dive_settings' => 258,
      'dive_gas' => 259,
      'dive_alarm' => 262,
      'exercise_title' => 264,
      'dive_summary' => 268,
+     'sleep_info_begin_file' => 273,
+     'unknown_sleep_stats' => 274,
+     'sleep_level' => 275,
+     'sleep_info_end_file' => 276,
      'jump' => 285,
+     'respiration_rate' => 297,
      'climb_pro' => 317,
      'mfg_range_min' => 0xFF00,
      'mfg_range_max' => 0xFFFE,
@@ -2294,6 +2305,7 @@ else {
      'swim2_apac' => 3639,
      'venu_daimler_asia' => 3737,
      'venu_daimler' => 3740,
+     'fr55' => 3869, # Forerunner 55
      'sdm4' => 10007, # SDM4 footpod
      'edge_remote' => 10014,
      'training_center' => 20119,
@@ -4693,6 +4705,24 @@ else {
      'threat_approaching_fast' => 3,
    },
 
+   # confirmed, see SleepLevel.java from fit-java-sdk
+   'sleep_level_type' => +{
+     '_base_type' => FIT_ENUM,
+     'unmeasureable' => 0,
+     'awake' => 1,
+     'light' => 2,
+     'deep' => 3,
+     'rem' => 4,
+     'invalid' => 255,
+   },
+
+   # confirmed, see fit-python-sdk
+   'max_met_category_type' => +{
+     '_base_type' => FIT_ENUM,
+     'generic' => 0,
+     'cycling' => 1,
+   },
+
    );
 
 my ($typenam, $typedesc);
@@ -6654,6 +6684,47 @@ sub named_type_value {
      47 => +{'name' => 'unknown47'}, # unknown ENUM
      48 => +{'name' => 'unknown48'}, # unknown ENUM
    },
+
+   'sleep_info_begin_file' => +{
+     253 => +{'name' => 'timestamp', 'type_name' => 'date_time'},
+     2 => +{'name' => 'timestamp2', 'type_name' => 'date_time'},
+    },
+   'unknown_sleep_stats' => +{
+     0 => +{'name' => 'unknown_sleep_stats_value'}, # unknown encoding!!
+    },
+   'sleep_info_end_file' => +{
+     253 => +{'name' => 'timestamp', 'type_name' => 'date_time'},
+    },
+   'unknown_summary' => +{
+     2 => +{'name' => 'unknown_summary_value'}, # unknown encoding!!
+    },
+
+   # confirmed, see fit-python-sdk
+   'max_met_data' => +{
+     0 => +{'name' => 'timestamp', 'type_name' => 'date_time'},
+     2 => +{'name' => 'vo2_max', 'scale' => 10, 'unit' => 'mL/kg/min'},
+     8 => +{'name' => 'max_met_category', 'type_name' => 'max_met_category_type'},
+     9 => +{'name' => 'calibration_data', 'type_name' => 'bool'},
+   },
+
+   # confirmed, see fit-python-sdk
+   'sleep_level' => +{
+     253 => +{'name' => 'timestamp', 'type_name' => 'date_time'},
+     0 => +{'name' => 'sleep_level_value', 'type_name' => 'sleep_level_type'},
+    },
+
+   # confirmed, see fir-python-sdk
+   'monitoring_hr_data' => +{
+     253 => +{'name' => 'timestamp', 'type_name' => 'date_time'},
+     0 => +{'name' => 'resting_heart_rate', 'unit' => 'bpm'}, # 7-day rolling average
+     1 => +{'name' => 'current_day_resting_heart_rate', 'unit' => 'bpm'}, # used for rolling average
+   },
+
+   # gathered from official FitCSVTool
+   'respiration_rate' => +{
+     253 => +{'name' => 'timestamp', 'type_name' => 'date_time'},
+     0 => +{'name' => 'respiration_rate_value', 'scale' => 100, 'unit' => 'breaths/min'},
+    },
 
    );
 
